@@ -17,9 +17,9 @@ class mqConsumer(mqConsumerInterface) :
     def setupRMQConnection(self) -> None:
         # Set-up Connection to RabbitMQ service
         con_params = pika.URLParameters(os.environ["AMQP_URL"])
-        connection = pika.BlockingConnection(parameters=con_params)
+        self.connection = pika.BlockingConnection(parameters=con_params)
         # Establish Channel
-        self.channel = connection.channel()
+        self.channel = self.connection.channel()
         # Create Queue if not already present
         self.channel.queue_declare(queue=self.queue_name)
         # Create the exchange if not already present
@@ -42,7 +42,7 @@ class mqConsumer(mqConsumerInterface) :
         # Acknowledge message
         channel.basic_ack(method_frame.delivery_tag, False)
         #Print message (The message is contained in the body parameter variable)
-        print(body.message)
+        print(body)
         pass
 
     def startConsuming(self) -> None:
